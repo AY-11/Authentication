@@ -1,22 +1,24 @@
 "use client";
 import React, { useState } from 'react';
-import { getAuth,createUserWithEmailAndPassword } from "firebase/auth";
-import { app } from "../../firebase";
+//import { getAuth,createUserWithEmailAndPassword,updateProfile } from "firebase/auth";
+//import { app } from "../../firebase";
 import Link from 'next/link';
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
+import { useAuth } from '@/context/autContext';
 
-
-
-const auth = getAuth(app);
+//const auth = getAuth(app);
 
 const Sup =()=>{
 
-    const router = useRouter()
+   const {creatUser} = useAuth();
+
+    //const router = useRouter()
 
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
+    const [dname,setName]=useState("");
 
-    const createUser =()=>{
+    const createUser =async()=>{
       
 
         let a = document.getElementById("pw1").value;
@@ -34,7 +36,7 @@ const Sup =()=>{
             else
             {   document.getElementById("message1").style.color="green";
                 document.getElementById("message1").innerHTML="Password match";
-                
+                passwordCheck = true;
             }
         }
         else
@@ -54,23 +56,34 @@ const Sup =()=>{
         if(testing.test(email))
         {     document.getElementById("valid").style.color="green";
             document.getElementById("valid").innerHTML="Valid Email";
+            emailCheck = true;
         }
         else
         {   document.getElementById("valid").style.color="red";
             document.getElementById("valid").innerHTML="Invalid Email";
             emailCheck=false;
         }
-
+        
         if(emailCheck==true &&  passwordCheck==true)
-        {  
-            createUserWithEmailAndPassword(auth,email,password).then((value)=>{
-                alert("User Registered Successfully");
-                router.push("components/HomePage");
-               
+        {   const success = await creatUser(email, password, dname);
 
-            }).catch(e => {
-                alert("Something went wrong!");
+            console.log(success);
+            if (success) {
+                console.log("success signin");
+                // Redirect or handle successful signup
+            } else {
+                console.log('Failed to create an account. Please try again.');
+            }
+            
+           
+            
+            /*
+            updateProfile({
+                displayName:dname,
             });
+
+            console.log(dname);
+           */
         }
         else
         {
@@ -101,7 +114,7 @@ const Sup =()=>{
                             <label htmlFor="fn">First Name<span className="text-red-600">*</span></label>
                             <label htmlFor="ln">Last Name</label>
                             
-                            <input type="text" name="fname" id="fn"  placeholder="Arun" required className="p-1 border border-black"/> 
+                            <input type="text" name="fname" id="fn" value={dname} onChange={e=>setName(e.target.value)} placeholder="Arun" required className="p-1 border border-black"/> 
                             <input type="text" name="lname" id="ln"  placeholder="Verma" className="p-1 border border-black"/> 
 
                         </div>

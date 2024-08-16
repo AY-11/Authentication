@@ -1,26 +1,31 @@
 import React,{useState } from 'react'
-import {getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import {app} from "../../firebase";
-import {useRouter} from "next/navigation";
-
+//import {getAuth, signInWithEmailAndPassword } from "firebase/auth";
+//import {app} from "../../firebase";
+//import {useRouter} from "next/navigation";
+import { useAuth } from '@/context/autContext';
 //creating auth instance
-const auth = getAuth(app);
+//const auth = getAuth(app);
 
 const Login =()=>{
 
+    const {login} =useAuth();
     //declaring router variable
-    const router =useRouter()
+    //const router =useRouter()
 
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
 
-    const signinUser =()=>{
-        signInWithEmailAndPassword(auth,email,password).then((value) => {
-            alert("Login Successfull");
-            router.push("./HomePage");
+    const signinUser =async()=>{
+        const success = await login(email, password);
 
-        })
-        .catch((err) => console.log(err));
+        console.log(success);
+        if (success) {
+            console.log("sucess Login");
+            // Redirect or handle successful signup
+        } else {
+            console.log('Failed to create an account. Please try again.');
+        }
+
     }
 
     return(
